@@ -12,13 +12,46 @@ export class PostService {
 
   private readonly httpClient = inject(HttpClient)
 
-  load() {
+  list() {
     const headers = new HttpHeaders({
       'apikey': this.supabaseApiKey,
       'Authorization': `Bearer ${this.supabaseApiKey}`,
     });
 
     return this.httpClient.get<Blog[]>(`${this.baseUrl}/blogs?select=*`, {headers});
+  }
 
+  create(blog: Blog) {
+    const headers = new HttpHeaders({
+      'apikey': this.supabaseApiKey,
+      'Authorization': `Bearer ${this.supabaseApiKey}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    });
+    return this.httpClient.post(`${this.baseUrl}/blogs`, blog, {headers});
+  }
+
+  update(blog: Blog) {
+    const headers = new HttpHeaders({
+      'apikey': this.supabaseApiKey,
+      'Authorization': `Bearer ${this.supabaseApiKey}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    });
+
+    const url = `${this.baseUrl}/blogs?id=eq.${blog.id}`;
+
+    return this.httpClient.patch(url, blog, { headers });
+  }
+
+  delete(blog: Blog) {
+    const headers = new HttpHeaders({
+      'apikey': this.supabaseApiKey,
+      'Authorization': `Bearer ${this.supabaseApiKey}`
+    });
+
+    const url = `${this.baseUrl}/blogs?id=eq.${blog.id}`;
+
+    return this.httpClient.delete(url, { headers });
   }
 }

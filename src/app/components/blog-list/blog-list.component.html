@@ -1,7 +1,92 @@
-<div>
+<div class="flex flex-col ">
   @for (blog of blogs(); track blog.id) {
-    <div>
-      <h1>{{blog.title}}</h1>
+    <div class="mb-2 p-4 flex items-center justify-center w-full">
+      <p-card [style]="{ width: '24rem', overflow: 'hidden', background: '#D2D2CF' }">
+        <ng-template #header>
+          @if (blog.image_url){
+            <img
+              alt="Card"
+              class="w-full"
+              src="{{ blog.image_url }}"
+            />
+          } @else {
+            <img
+              alt="Card"
+              class="w-full"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1mJRlmPeQ49pJ5cjjab7-XkYd2ty27V40JA&s"
+            />
+          }
+        </ng-template>
+        <ng-template #title> {{ blog.title }} </ng-template>
+        <p>{{ blog.content }}</p>
+        <ng-template #footer>
+          <div class="flex gap-4 mt-1 justify-end">
+            <p-button
+              (click)="editPost(blog)"
+              severity="contrast"
+              label="Editar"
+            />
+            <p-button
+              (click)="deletePost(blog)"
+              severity="danger"
+              label="Eliminar"/>
+          </div>
+        </ng-template>
+      </p-card>
     </div>
   }
+
+  <div class="card flex justify-center p-4">
+    <p-button
+      (click)="showDialog()"
+      label="Crea un Post"
+      class="w-96"
+      styleClass="w-96"
+    />
+    <p-dialog
+      header="Crea tu Post"
+      [modal]="true"
+      [(visible)]="visible"
+      [style]="{ width: '25rem' }"
+    >
+      <div class="flex items-center gap-4 mb-8">
+        <label for="image" class="font-semibold w-24">URL Imagen</label>
+        <input
+          pInputText
+          id="image"
+          class="flex-auto w-64"
+          [formControl]="newTitle"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex items-center gap-4 mb-4">
+        <label for="title" class="font-semibold w-24">Título</label>
+        <input
+          pInputText
+          id="title"
+          class="flex-auto w-64"
+          [formControl]="newTitle"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex items-center gap-4 mb-8">
+        <label for="content" class="font-semibold w-24">Contenido</label>
+        <input
+          pInputText
+          id="content"
+          class="flex-auto h-20 w-64"
+          [formControl]="newContent"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="closeDialog()" />
+        <p-button
+          label="Save"
+          (click)="updatePost(selectedBlog())"
+          [disabled]="!newTitle.valid || !newContent.valid"
+        />
+      </div>
+    </p-dialog>
+  </div>
 </div>
