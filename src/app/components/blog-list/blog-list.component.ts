@@ -1,5 +1,5 @@
 import {Component, inject, signal} from '@angular/core';
-import {FormControl, FormsModule, Validators} from "@angular/forms";
+import {FormControl, FormGroup, FormsModule, Validators} from "@angular/forms";
 import {ReactiveFormsModule} from '@angular/forms';
 
 import {Blog} from "../../interfaces/blog.interface";
@@ -30,9 +30,15 @@ export class BlogListComponent {
   public visible = signal(false);
   public selectedBlog = signal<Blog | null>(null);
 
-  public newTitle = new FormControl('', Validators.required);
-  public newContent = new FormControl('', Validators.required);
-  public newImages = new FormControl('');
+  public blogForm = new FormGroup({
+    title: new FormControl('', Validators.required),
+    content: new FormControl('', Validators.required),
+    image: new FormControl('')
+  });
+
+  // public newTitle = new FormControl('', Validators.required);
+  // public newContent = new FormControl('', Validators.required);
+  // public newImages = new FormControl('');
 
   private readonly blogsService = inject(PostService);
 
@@ -47,9 +53,7 @@ export class BlogListComponent {
   closeDialog() {
     this.visible.set(false);
     this.selectedBlog.set(null);
-    this.newTitle.setValue('');
-    this.newContent.setValue('');
-    this.newImages.setValue('');
+    this.blogForm.reset();
   }
 
   fetchPosts() {
@@ -60,10 +64,11 @@ export class BlogListComponent {
   }
 
   createPost() {
+    const formValue = this.blogForm.value;
     const newBlog: Blog = {
-      title: this.newTitle.value || '',
-      content: this.newContent.value || '',
-      image_url: this.newImages.value || '',
+      title: formValue.title || '',
+      content: formValue.content || '',
+      image_url: formValue.image || '',
       is_published: true,
     };
 
@@ -71,21 +76,17 @@ export class BlogListComponent {
       console.log(data);
       this.fetchPosts();
       this.closeDialog();
-      this.newTitle.setValue('');
-      this.newContent.setValue('');
-      this.newImages.setValue('');
     });
-
-    console.log(newBlog);
   }
 
   updatePost(blog: Blog | null) {
     if (blog) {
+      const formValue = this.blogForm.value;
       const updatedBlog: Blog = {
         ...blog,
-        title: this.newTitle.value || '',
-        content: this.newContent.value || '',
-        image_url: this.newImages.value || '',
+        title: formValue.title || '',
+        content: formValue.content || '',
+        image_url: formValue.image || '',
       };
 
       this.blogsService.update(updatedBlog).subscribe(() => {
@@ -100,12 +101,13 @@ export class BlogListComponent {
 
   editPost(blog: Blog) {
     this.selectedBlog.set(blog);
-    this.newTitle.setValue(blog.title);
-    this.newContent.setValue(blog.content);
-    this.newImages.setValue(blog.image_url);
+    this.blogForm.patchValue({
+      title: blog.title,
+      content: blog.content,
+      image: blog.image_url
+    });
     this.showDialog();
   }
-
 
   deletePost(blog: Blog) {
     this.blogsService.delete(blog).subscribe(() => {

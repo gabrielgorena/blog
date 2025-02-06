@@ -49,13 +49,14 @@
       [(visible)]="visible"
       [style]="{ width: '25rem' }"
     >
+      <form [formGroup]="blogForm">
       <div class="flex items-center gap-4 mb-8">
         <label for="image" class="font-semibold w-24">URL Imagen</label>
         <input
           pInputText
           id="image"
           class="flex-auto w-64"
-          [formControl]="newTitle"
+          formControlName="image"
           autocomplete="off"
         />
       </div>
@@ -65,7 +66,7 @@
           pInputText
           id="title"
           class="flex-auto w-64"
-          [formControl]="newTitle"
+          formControlName="title"
           autocomplete="off"
         />
       </div>
@@ -75,16 +76,17 @@
           pInputText
           id="content"
           class="flex-auto h-20 w-64"
-          [formControl]="newContent"
+          formControlName="content"
           autocomplete="off"
         />
       </div>
+      </form>
       <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="closeDialog()" />
         <p-button
           label="Save"
           (click)="updatePost(selectedBlog())"
-          [disabled]="!newTitle.valid || !newContent.valid"
+          [disabled]="!blogForm.valid"
         />
       </div>
     </p-dialog>
