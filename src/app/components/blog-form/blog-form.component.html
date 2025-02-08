@@ -1,1 +1,44 @@
-<p>blog-form works!</p>
+<form [formGroup]="blogForm" (ngSubmit)="onSubmit()">
+  <div class="flex items-center gap-4 mb-8">
+    <label for="image" class="font-semibold w-24">URL Imagen</label>
+    <input
+      pInputText
+      id="image"
+      class="flex-auto w-64"
+      formControlName="image"
+      autocomplete="off"
+    />
+  </div>
+  <div class="flex items-center gap-4 mb-4">
+    <label for="title" class="font-semibold w-24">Título</label>
+    <input
+      pInputText
+      id="title"
+      class="flex-auto w-64"
+      formControlName="title"
+      autocomplete="off"
+    />
+  </div>
+  <div class="flex items-center gap-4 mb-8">
+    <label for="content" class="font-semibold w-24">Contenido</label>
+    <input
+      pInputText
+      id="content"
+      class="flex-auto h-20 w-64"
+      formControlName="content"
+      autocomplete="off"
+    />
+  </div>
+  <div class="flex justify-end gap-2">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      (click)="onCancel()"
+    />
+    <p-button
+      label="Save"
+      type="submit"
+      [disabled]="!blogForm.valid"
+    />
+  </div>
+</form>

@@ -1,44 +1,22 @@
-import {Component, inject, signal} from '@angular/core';
-import {FormControl, FormGroup, FormsModule, Validators} from "@angular/forms";
-import {ReactiveFormsModule} from '@angular/forms';
-
-import {Blog} from "../../interfaces/blog.interface";
-import {PostService} from "../../services/post.service";
-
-import {Button} from "primeng/button";
-import {Dialog} from "primeng/dialog";
-import {InputTextModule} from 'primeng/inputtext';
-import {Card} from "primeng/card";
+import { Component, inject, signal } from '@angular/core';
+import { Blog } from '../../interfaces/blog.interface';
+import { PostService } from '../../services/post.service';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
+import { BlogFormComponent } from '../blog-form/blog-form.component';
 
 @Component({
   selector: 'app-blog-list',
-  imports: [
-    Button,
-    Dialog,
-    InputTextModule,
-    Card,
-    CardModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
+  standalone: true,
+  imports: [ButtonModule, DialogModule, CardModule, CommonModule, BlogFormComponent],
   templateUrl: './blog-list.component.html',
 })
 export class BlogListComponent {
-
   public blogs = signal<Blog[]>([]);
   public visible = signal(false);
   public selectedBlog = signal<Blog | null>(null);
-
-  public blogForm = new FormGroup({
-    title: new FormControl('', Validators.required),
-    content: new FormControl('', Validators.required),
-    image: new FormControl('')
-  });
-
-  // public newTitle = new FormControl('', Validators.required);
-  // public newContent = new FormControl('', Validators.required);
-  // public newImages = new FormControl('');
 
   private readonly blogsService = inject(PostService);
 
@@ -50,69 +28,42 @@ export class BlogListComponent {
     this.visible.set(true);
   }
 
-  closeDialog() {
-    this.visible.set(false);
-    this.selectedBlog.set(null);
-    this.blogForm.reset();
-  }
-
   fetchPosts() {
     this.blogsService.list().subscribe((data) => {
-      console.log(data);
       this.blogs.set(data as Blog[]);
     });
   }
 
-  createPost() {
-    const formValue = this.blogForm.value;
-    const newBlog: Blog = {
-      title: formValue.title || '',
-      content: formValue.content || '',
-      image_url: formValue.image || '',
-      is_published: true,
-    };
-
-    this.blogsService.create(newBlog).subscribe((data: any) => {
-      console.log(data);
+  createPost(newBlog: Blog) {
+    this.blogsService.create(newBlog).subscribe(() => {
       this.fetchPosts();
       this.closeDialog();
     });
   }
 
-  updatePost(blog: Blog | null) {
-    if (blog) {
-      const formValue = this.blogForm.value;
-      const updatedBlog: Blog = {
-        ...blog,
-        title: formValue.title || '',
-        content: formValue.content || '',
-        image_url: formValue.image || '',
-      };
-
-      this.blogsService.update(updatedBlog).subscribe(() => {
-        console.log('Blog actualizado:', updatedBlog);
-        this.fetchPosts();
-        this.closeDialog();
-      });
-    } else {
-      this.createPost();
-    }
-  }
-
-  editPost(blog: Blog) {
-    this.selectedBlog.set(blog);
-    this.blogForm.patchValue({
-      title: blog.title,
-      content: blog.content,
-      image: blog.image_url
+  updatePost(updatedBlog: Blog) {
+    this.blogsService.update(updatedBlog).subscribe(() => {
+      this.fetchPosts();
+      this.closeDialog();
     });
-    this.showDialog();
   }
 
   deletePost(blog: Blog) {
     this.blogsService.delete(blog).subscribe(() => {
-      console.log(`Blog eliminado: ${blog.id}`);
       this.fetchPosts();
     });
+  }
+
+  closeDialog() {
+    this.visible.set(false);
+    this.selectedBlog.set(null);
+  }
+
+  onSave(blog: Blog) {
+    if (this.selectedBlog()) {
+      this.updatePost(blog);
+    } else {
+      this.createPost(blog);
+    }
   }
 }
