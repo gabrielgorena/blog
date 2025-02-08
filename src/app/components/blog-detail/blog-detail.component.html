@@ -1,0 +1,22 @@
+<div class="p-4 max-w-3xl mx-auto">
+  @if (blog()) {
+    <p-card>
+      <ng-template #header>
+        @if (blog()?.image_url) {
+          <img [src]="blog()?.image_url" alt="Blog image" class="w-full">
+        }
+      </ng-template>
+      <h1 class="text-3xl font-bold mb-4">{{ blog()?.title }}</h1>
+      <div class="prose">
+        {{ blog()?.content }}
+      </div>
+      <div class="mt-6">
+        <p-button
+          label="Volver"
+          (click)="goBack()" />
+      </div>
+    </p-card>
+  } @else {
+    <p>No se encontró el blog.</p>
+  }
+</div>

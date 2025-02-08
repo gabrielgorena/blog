@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-blog-form',
-  standalone: true,
   imports: [ReactiveFormsModule, ButtonModule, InputTextModule, CommonModule],
   templateUrl: './blog-form.component.html',
 })

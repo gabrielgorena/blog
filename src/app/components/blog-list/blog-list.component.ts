@@ -6,10 +6,10 @@ import { DialogModule } from 'primeng/dialog';
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { BlogFormComponent } from '../blog-form/blog-form.component';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-blog-list',
-  standalone: true,
   imports: [ButtonModule, DialogModule, CardModule, CommonModule, BlogFormComponent],
   templateUrl: './blog-list.component.html',
 })
@@ -19,6 +19,8 @@ export class BlogListComponent {
   public selectedBlog = signal<Blog | null>(null);
 
   private readonly blogsService = inject(PostService);
+
+  private router = inject(Router)
 
   constructor() {
     this.fetchPosts();
@@ -65,5 +67,9 @@ export class BlogListComponent {
     } else {
       this.createPost(blog);
     }
+  }
+
+  viewBlogDetails(blogId: number | string) {
+    this.router.navigate(['/blogs', blogId]);
   }
 }

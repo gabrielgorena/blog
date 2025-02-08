@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Blog} from "../interfaces/blog.interface";
+import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,18 @@ export class PostService {
     });
 
     return this.httpClient.get<Blog[]>(`${this.baseUrl}/blogs?select=*`, {headers});
+  }
+
+  get(id: string | number): Observable<Blog[]> {
+    const headers = new HttpHeaders({
+      'apikey': this.supabaseApiKey,
+      'Authorization': `Bearer ${this.supabaseApiKey}`,
+    })
+
+    return this.httpClient.get<Blog[]>(
+      `${this.baseUrl}/blogs?id=eq.${id}&select=*`,
+      {headers}
+    );
   }
 
   create(blog: Blog) {
