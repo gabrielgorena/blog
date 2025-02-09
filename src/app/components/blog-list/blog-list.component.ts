@@ -7,10 +7,18 @@ import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { BlogFormComponent } from '../blog-form/blog-form.component';
 import {Router} from "@angular/router";
+import {TruncatePipe} from "./pipe-transform";
 
 @Component({
   selector: 'app-blog-list',
-  imports: [ButtonModule, DialogModule, CardModule, CommonModule, BlogFormComponent],
+  imports: [
+    ButtonModule,
+    DialogModule,
+    CardModule,
+    CommonModule,
+    BlogFormComponent,
+    TruncatePipe
+  ],
   templateUrl: './blog-list.component.html',
 })
 export class BlogListComponent {
@@ -45,7 +53,10 @@ export class BlogListComponent {
 
   updatePost(updatedBlog: Blog) {
     this.blogsService.update(updatedBlog).subscribe(() => {
-      this.fetchPosts();
+      const updatedBlogs = this.blogs().map((blog) =>
+        blog.id === updatedBlog.id ? updatedBlog : blog
+      );
+      this.blogs.set(updatedBlogs);
       this.closeDialog();
     });
   }

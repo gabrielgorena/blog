@@ -1,7 +1,28 @@
 <div class="flex flex-col">
+  <div class="card flex justify-center p-4">
+    <p-button
+      (click)="selectedBlog.set(null); showDialog()"
+      label="Crea Tú PostCar"
+      class="w-96"
+      styleClass="w-96"
+    />
+    <p-dialog
+      header="Crea Tú PostCar"
+      [modal]="true"
+      [(visible)]="visible"
+      [style]="{ width: '25rem' }"
+    >
+      <app-blog-form
+        [blog]="selectedBlog()"
+        (save)="onSave($event)"
+        (cancel)="closeDialog()"
+      />
+    </p-dialog>
+  </div>
+
   @for (blog of blogs(); track blog.id) {
     <div class="mb-2 p-4 flex items-center justify-center w-full">
-      <p-card [style]="{ width: '24rem', overflow: 'hidden', background: '#D2D2CF' }">
+      <p-card [style]="{ width: '24rem', overflow: 'hidden', background: '#9b9b9b' }">
         <ng-template #header>
           @if (blog.image_url){
             <img
@@ -17,10 +38,14 @@
             />
           }
         </ng-template>
-        <ng-template #title> {{ blog.title }} </ng-template>
-        <p>{{ blog.content | slice:0:100 }}...</p>
+        <ng-template
+          #title
+        >
+          <p class="text-white font-bold">{{ blog.title }}</p>
+        </ng-template>
+        <p class="text-white">{{ blog.content | truncate:50 }}</p>
         <ng-template #footer>
-          <div class="flex gap-4 mt-1 justify-end">
+          <div class="flex gap-4 mt-AC1 justify-end">
             <p-button
               (click)="viewBlogDetails(blog.id!)"
               severity="info"
@@ -41,25 +66,4 @@
       </p-card>
     </div>
   }
-
-  <div class="card flex justify-center p-4">
-    <p-button
-      (click)="selectedBlog.set(null); showDialog()"
-      label="Crea un Post"
-      class="w-96"
-      styleClass="w-96"
-    />
-    <p-dialog
-      header="Crea tu Post"
-      [modal]="true"
-      [(visible)]="visible"
-      [style]="{ width: '25rem' }"
-    >
-      <app-blog-form
-        [blog]="selectedBlog()"
-        (save)="onSave($event)"
-        (cancel)="closeDialog()"
-      />
-    </p-dialog>
-  </div>
 </div>
