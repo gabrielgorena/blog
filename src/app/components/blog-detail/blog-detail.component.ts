@@ -3,13 +3,14 @@ import {Card} from "primeng/card";
 import {Button} from "primeng/button";
 import {Blog} from "../../interfaces/blog.interface";
 import {PostService} from "../../services/post.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 
 @Component({
   selector: 'app-blog-detail',
   imports: [
     Card,
-    Button
+    Button,
+    RouterModule
   ],
   templateUrl: './blog-detail.component.html',
 })
