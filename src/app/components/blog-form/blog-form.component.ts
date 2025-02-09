@@ -1,13 +1,21 @@
 import {Component, effect, input, output} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 import { Blog } from '../../interfaces/blog.interface';
+
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { CommonModule } from '@angular/common';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-blog-form',
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    ButtonModule,
+    InputTextModule,
+    TextareaModule,
+    CommonModule],
   templateUrl: './blog-form.component.html',
 })
 export class BlogFormComponent {
@@ -33,7 +41,11 @@ export class BlogFormComponent {
           image: currentBlog.image_url,
         });
       } else {
-        this.blogForm.reset();
+        this.blogForm.reset({
+          title: '',
+          content: '',
+          image: '',
+        });
       }
     });
   }
@@ -50,6 +62,12 @@ export class BlogFormComponent {
         is_published: true,
       };
       this.save.emit(newBlog);
+      this.blogForm.reset();
+      this.blogForm.patchValue({
+        title: '',
+        content: '',
+        image: ''
+      })
     }
   }
 
