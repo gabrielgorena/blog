@@ -1,7 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Blog} from "../interfaces/blog.interface";
-import {Observable} from "rxjs";
+import { Observable, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,13 @@ export class PostService {
       'Authorization': `Bearer ${this.supabaseApiKey}`,
     });
 
-    return this.httpClient.get<Blog[]>(`${this.baseUrl}/blogs?select=*`, {headers});
+    return this.httpClient.get<Blog[]>(`${this.baseUrl}/blogs?select=*`, { headers }).pipe(
+      retry(2),
+      catchError((error) => {
+        console.error('Error al obtener la lista de blogs:', error);
+        return throwError(() => new Error('No se pudo cargar la lista de blogs. Inténtalo de nuevo más tarde.'));
+      })
+    );
   }
 
   get(id: string | number): Observable<Blog[]> {
@@ -28,9 +35,12 @@ export class PostService {
       'Authorization': `Bearer ${this.supabaseApiKey}`,
     })
 
-    return this.httpClient.get<Blog[]>(
-      `${this.baseUrl}/blogs?id=eq.${id}&select=*`,
-      {headers}
+    return this.httpClient.get<Blog[]>(`${this.baseUrl}/blogs?id=eq.${id}&select=*`, { headers }).pipe(
+      retry(2),
+      catchError((error) => {
+        console.error('Error al obtener el blog:', error);
+        return throwError(() => new Error('No se pudo cargar el blog. Inténtalo de nuevo más tarde.'));
+      })
     );
   }
 
@@ -41,7 +51,13 @@ export class PostService {
       'Content-Type': 'application/json',
       'Prefer': 'return=representation'
     });
-    return this.httpClient.post(`${this.baseUrl}/blogs`, blog, {headers});
+    return this.httpClient.post(`${this.baseUrl}/blogs`, blog, { headers }).pipe(
+      retry(2),
+      catchError((error) => {
+        console.error('Error al crear el blog:', error);
+        return throwError(() => new Error('No se pudo crear el blog. Inténtalo de nuevo más tarde.'));
+      })
+    );
   }
 
   update(blog: Blog) {
@@ -54,7 +70,13 @@ export class PostService {
 
     const url = `${this.baseUrl}/blogs?id=eq.${blog.id}`;
 
-    return this.httpClient.patch(url, blog, { headers });
+    return this.httpClient.patch(url, blog, { headers }).pipe(
+      retry(2),
+      catchError((error) => {
+        console.error('Error al actualizar el blog:', error);
+        return throwError(() => new Error('No se pudo actualizar el blog. Inténtalo de nuevo más tarde.'));
+      })
+    );
   }
 
   delete(blog: Blog) {
@@ -65,6 +87,12 @@ export class PostService {
 
     const url = `${this.baseUrl}/blogs?id=eq.${blog.id}`;
 
-    return this.httpClient.delete(url, { headers });
+    return this.httpClient.delete(url, { headers }).pipe(
+      retry(2),
+      catchError((error) => {
+        console.error('Error al eliminar el blog:', error);
+        return throwError(() => new Error('No se pudo eliminar el blog. Inténtalo de nuevo más tarde.'));
+      })
+    );
   }
 }
